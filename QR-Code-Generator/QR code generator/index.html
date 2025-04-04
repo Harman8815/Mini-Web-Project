@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Code Generator</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="script.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        <div class="img">
+            <img src="#" alt="" id="img">
+        </div>
+        <h1>QR code</h1>
+        <label for="input">Enter text:</label>
+        <input type="text" name="" id="input" autocomplete="off" />
+        <button type="submit" onclick="func()" id="submit">
+            Generate QR
+        </button>
+        <button id="qrdownload" onclick="downloadImage()" class="btn btn-info">Download</button>
+
+    </div>
+    <footer>
+        <p>&copy; 2024 Qr-code-Generator by Harman. All Rights Reserved.</p>
+    </footer>
+</body>
+<script type="text/javascript">
+    var isDownloading = false;
+
+    function downloadImage() {
+        if (isDownloading) {
+            return;
+        }
+
+        isDownloading = true;
+
+        var x = document.getElementById("input").value;
+        var qrCodeBaseUri = 'https://api.qrserver.com/v1/create-qr-code/?',
+            params = {
+                data: x,
+                size: '150x150',
+                margin: 0
+            };
+        var url = qrCodeBaseUri + $.param(params);
+
+        var link = document.createElement('a');
+        link.style.display = 'none';
+        document.body.appendChild(link);
+
+        fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                var blobUrl = URL.createObjectURL(blob);
+
+                link.href = blobUrl;
+                link.download = 'qr-code.png';
+
+                link.click();
+
+                document.body.removeChild(link);
+                URL.revokeObjectURL(blobUrl);
+
+                isDownloading = false;
+            });
+    }
+
+    $('#qrdownload').click(function () {
+        downloadImage();
+    });
+
+</script>
+
+</html>
